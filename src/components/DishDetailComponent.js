@@ -1,83 +1,71 @@
-import React, { Component } from 'react';
-import { Card, CardImg, CardTitle, CardText, CardBody } from 'reactstrap';
+import React from 'react';
+import { Card, CardImg, CardTitle, CardText, CardBody, BreadcrumbItem, Breadcrumb,Col } from 'reactstrap';
+import {Link} from 'react-router-dom';
+import CommentForm from './CommentForm';
 
-class DishDetail extends Component{
 
-    constructor(props){
-        super(props);
-
-    }
-    
-
-    renderDish(dish){
-        if(dish !=null){
-            return(
+function RenderDish({dish}){
+    return(
+       
+            <div className="col-12 col-md-5 m-1">
                 <Card>
-                    <CardImg top src={dish.image} alt={dish.name} />
+                    <CardImg width="100%" top src={dish.image} alt={dish.name} />
                     <CardBody>
                       <CardTitle>{dish.name}</CardTitle>
                       <CardText>{dish.description}</CardText>
                     </CardBody>
                 </Card>
-                
-            );
-        }
-        else
-        return(
-            <div></div>
-        );
-    }
-
-    renderComments(comments){
-        
-        if(comments!=null){
-            
-          return (
-              
-            comments.map( (thiscomment)=>{
-                return(
-                    <ul className="list-unstyled">
-                            <li className="mb-3">{thiscomment.comment} </li>
-                            <li>--{thiscomment.author} , {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: '2-digit'}).format(new Date(Date.parse(thiscomment.date)))} </li>
-                    </ul>
-                    
-                );
-            }
-
-          )
-          )
-
-        }
-        
-    }
-
-    render(){
-        
-        const dish = this.props.dish;
-        var comments=null;
-        if(dish!=null){
-            comments = dish.comments;
-        }
-
-        //const comments = dish.comments;
-
-        return(
-            
-            <div className="row">
-                <div className="col-12 col-md-5 m-1">
-                    {this.renderDish(dish)}
-                </div>    
-                
-                <div className="col-12 col-md-5 m-1">
-                <h4>Comments</h4>
-                    {this.renderComments(comments)}
-                </div>
-
             </div>
-            
-            
+        
+    );
+}
+
+function RenderComments({comments}){
+    if(comments!=null){
+        console.log(comments);
+        return(
+            <div className="col-12 col-md-5 m-1">
+                <h4>Comments</h4>
+                <ul className="list-unstyled">
+                    {comments.map((comment) => {
+                            return(
+                                <li key={comment.id}>
+                                    <p>{comment.comment}</p>
+                                    <p>-- {comment.author} , {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: '2-digit'}).format(new Date(Date.parse(comment.date)))} </p>
+                                </li>
+                            );
+                        })}
+                </ul>
+                <CommentForm />
+            </div>
         );
     }
 }
+
+const DishDetail = (props) => {
+    if(props.dish!=null){
+        return(
+            <div className="container">
+                <div className="row">
+                    <Breadcrumb>
+                        <BreadcrumbItem><Link to="/menu">Menu</Link></BreadcrumbItem>
+                        <BreadcrumbItem active>{props.dish.name}</BreadcrumbItem>
+                    </Breadcrumb>
+                    <div className="col-12">
+                        <h3>{props.dish.name}</h3>
+                        <hr />
+                    </div>                
+                </div>
+                <div className="row">
+        
+                    <RenderDish dish={props.dish} />
+                    <RenderComments comments={props.comments} /> 
+                    
+                </div>
+                </div>
+        );
+    }
+}
+
 
 export default DishDetail;
